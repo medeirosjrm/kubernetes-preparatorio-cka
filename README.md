@@ -1,5 +1,9 @@
 # Preparatório para o CKA
 
+## Ambinete Linux (Virtual box)
+
+## Criando as máquinas no virtual box
+
 ## Ambiente Windows
 
 ### Usando o hyper-v (com econômia de espaço)
@@ -17,3 +21,5 @@
 
 https://www.youtube.com/watch?v=ug1c-F-wpuE
 
+
+[Dia 01](dia-01.md)
