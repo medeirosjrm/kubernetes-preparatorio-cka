@@ -366,5 +366,44 @@ status: {}
 ## Primeiros passos - Versão 1.19.3 - Parte 2
 ---
 
+## Exponto um pod
+
+```
+kubectl expose pod nginx
+
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+nginx        ClusterIP   10.96.56.238   <none>        80/TCP    40s
+```
+O tipo ClusterIP só funciona internamente no cluster
+
+Descrição de como está configurado o serviço do NGINX que foi exposto
+```
+kubectl describe service nginx
+Name:              nginx
+Namespace:         default
+Labels:            run=nginx
+Annotations:       <none>
+Selector:          run=nginx
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.96.56.238
+IPs:               10.96.56.238
+Port:              <unset>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         10.244.0.24:80
+Session Affinity:  None
+Events:            <none>
+```
+
+## Como acessar os manuais pela linha de comando
+```
+kubectl explain pod
+```
+
+
+### DAY 2 
+
+
 
 
