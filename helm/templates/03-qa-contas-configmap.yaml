@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.ambiente }}-meu-configmap
+  namespace: ns-da-aplicacao
+data:
+  app.config: |
+    {{- tpl ((.Files.Glob "qa/config/app.config").AsConfig) . | nindent 2 }}
