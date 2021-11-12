@@ -1,5 +1,27 @@
 # HELM
 
+## Instalações
+
+- AWS CLI
+  - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+- eksctl 
+  - https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html
+
+- kubectl
+  - https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/
+
+- helm
+  - https://helm.sh/docs/intro/install/
+
+
+- Ativar o k8s
+  - aws eks --region us-east-1 update-kubeconfig --name cluster-01
+
+- K8sLens
+  - https://k8slens.dev/
+
+
 
 ## Configurações básicas
 
