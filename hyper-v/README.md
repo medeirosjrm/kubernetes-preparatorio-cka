@@ -17,6 +17,3 @@
 
 
 https://www.youtube.com/watch?v=ug1c-F-wpuE
-
-
-[Dia 01](dia-01.md)
