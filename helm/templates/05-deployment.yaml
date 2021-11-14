@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meu-app-deployment
+  namespace: ns-da-aplicacao
+  labels:
+    app: meu-app-k8s
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: meu-app-k8s
+  template:
+    metadata:
+      labels:
+        app: meu-app-k8s
+    spec:
+      serviceAccountName: nome-da-conta-de-servico-criada-pelo-eksctl-create-iamserviceaccount 
+      # Containers
+      #----------------
+      containers:
+        - name: meu-app-k8s
+          image: url-do-container-registry:{{ .Values.versao }}          
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: AMBIENTE
+              value: {{ .Values.ambiente }}
+          volumeMounts:
+          ## K8s Configs Maps
+            - name: vol-configmap
+              mountPath: /app/config/app.config
+              subPath: app.config
+              readOnly: true
+          ## K8s Secrets
+            - name: vol-secrets
+              mountPath: /app/config/database.config
+              subPath: database.config
+              readOnly: true
+          ## Aws Secrets Manager          
+            - name: vol-secrets-manager
+              mountPath: /app/config/aws_secret.config
+              subPath: aws_secret.config
+              readOnly: true
+            
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+      # Volumes
+      #----------------
+      volumes:
+        # K8s ConfigMap
+        - name: vol-configmap
+          configMap:
+            name: {{ .Values.ambiente }}-meu-configmap      
+        # K8s Secrets
+        - name: vol-secrets
+          secret:
+            secretName: {{ .Values.ambiente }}-secrets-name
+        # Aws - Secrets Manager
+        - name: vol-secrets-manager
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: nome-do-secret-provider-class
+
+
+
+#      nodeSelector:
+#        role: webservices
+
+      # affinity:
+      #   #Nao deixar 2 pods no mesmo node
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: app
+      #               operator: In
+      #               values:
+      #                 - contas-php
+      #         topologyKey: "kubernetes.io/hostname"
