@@ -1,6 +1,19 @@
 # Primeiros passos - Versão 1.19.3
 
 
+## Conceitos-chave do k8s
+É importante saber que a forma como o k8s gerencia os contêineres é ligeiramente diferente de outros orquestradores, como o Docker Swarm, sobretudo devido ao fato de que ele não trata os contêineres diretamente, mas sim através de pods. Vamos conhecer alguns dos principais conceitos que envolvem o k8s a seguir:
+
+**Pod:** é o menor objeto do k8s. Como dito anteriormente, o k8s não trabalha com os contêineres diretamente, mas organiza-os dentro de pods, que são abstrações que dividem os mesmos recursos, como endereços, volumes, ciclos de CPU e memória. Um pod, embora não seja comum, pode possuir vários contêineres;
+
+**Controller:** é o objeto responsável por interagir com o API Server e orquestrar algum outro objeto. Exemplos de objetos desta classe são os Deployments e Replication Controllers;
+
+**ReplicaSets:** é um objeto responsável por garantir a quantidade de pods em execução no nó;
+
+**Deployment:** É um dos principais controllers utilizados. O Deployment, em conjunto com o ReplicaSet, garante que determinado número de réplicas de um pod esteja em execução nos nós workers do cluster. Além disso, o Deployment também é responsável por gerenciar o ciclo de vida das aplicações, onde características associadas a aplicação, tais como imagem, porta, volumes e variáveis de ambiente, podem ser especificados em arquivos do tipo yaml ou json para posteriormente serem passados como parâmetro para o kubectl executar o deployment. Esta ação pode ser executada tanto para criação quanto para atualização e remoção do deployment;
+
+**Jobs e CronJobs:** são objetos responsáveis pelo gerenciamento de jobs isolados ou recorrentes.
+
 ## Kubectl describe
 
 Descreve informações sobre nodes, pods, serviços, basicamente todo o conteudo do k8s vc pode usaro describe
@@ -402,7 +415,6 @@ kubectl explain pod
 ```
 
 
-### DAY 2 
 
 
 
