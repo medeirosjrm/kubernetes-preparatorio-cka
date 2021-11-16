@@ -49,5 +49,28 @@ nginx   10.244.0.25:80   62s
 Test
 curl 10.244.0.25
 
-
+Logs
+kubectl logs -f nginx -n giropops
 ```
+
+## Revisando detalhes do service
+```
+kubectl describe service nginx
+
+Name:              nginx
+Namespace:         default
+Labels:            run=nginx
+Annotations:       <none>
+Selector:          run=nginx
+Type:              ClusterIP
+IP:                10.104.209.243
+Port:              <unset>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         10.46.0.0:80
+Session Affinity:  None
+Events:            <none>
+```
+
+**Importante**: Os endpoins são os endereços de cada replica do POD, quando quando olhamos o IP que está aparecendo no services será como um Load Balance que irá direcionar o trafego para cada ip de cada replica
+
+

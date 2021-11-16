@@ -80,8 +80,31 @@ spec:
 kubectl create -f meu-primeiro.yaml
 kubectl delete -f meu-primeiro.yaml
 
-# Para gerar o arquivo yaml
-kubectl run nginx --image=nginx --dry-run=client -o yaml > meu_segundo_pod.yaml
+```
+## Para gerar um pod pela linha de comando e exportar para um arquivo yaml
+```
+kubectl run nginx --image nginx --port 80 --dry-run=client -o yaml > pod-template.yaml
+```
+Resultado:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
 ```
 
 ## Como acessar os manuais pela linha de comando
