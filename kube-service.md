@@ -74,3 +74,8 @@ Events:            <none>
 **Importante**: Os endpoins são os endereços de cada replica do POD, quando quando olhamos o IP que está aparecendo no services será como um Load Balance que irá direcionar o trafego para cada ip de cada replica
 
 
+**Estrutura dos tipos**: 
+- Quando criar um ClusterIP é apenas para uso interno no servidor
+- Quando criar um NodePort é criado também um ClusterIP e pode ter acesso externo via porta
+- Quando criar um LoadBalancer é criado um NodePort e também um ClusterIP
+
