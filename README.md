@@ -152,7 +152,16 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 
 ## Taints
 
-[Readme](kube-limits.md)
-...
+[Readme](kube-taints.md)
+
+## Deployments
+
+[Readme](kube-deployments.md)
+
+## ReplicaSet
+
+[Readme](kube-replicaset.md)
+
+...DemonSet...
 
 

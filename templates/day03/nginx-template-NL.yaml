@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx-nl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-nl
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx-nl
+        dc: NL
+    spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx-nl
+        ports:
+        - containerPort: 80          
+        resources: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+status: {}

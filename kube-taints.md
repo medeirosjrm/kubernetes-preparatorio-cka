@@ -11,7 +11,36 @@ Exemplo:
 
 Você adiciona um taint a um nó utilizando kubectl taint. Por exemplo,
 
-```
+
+## NoSchedule 
+
+O NoSchedule não permite adicionar mais pods no nó em caso de scale up
+
+
+```bash
+# Adicionar um taint
 kubectl taint nodes node1 key1=value1:NoSchedule
+
+# Remover o taint
+kubectl taint node elliot-02 key1:NoSchedule-
 ```
 No exemplo acima nenhum pode poderá se adicionado para aquele nó, porém se um nó tiver uma tolerância a ação NoSchedule ele isso significa que o pod conseguirá ser executado no nó.
+
+
+O Taint nada mais é do que adicionar propriedades ao nó do cluster para impedir que os pods sejam alocados em nós inapropriados.
+
+Por exemplo, todo nó master do cluster é marcado para não receber pods que não sejam de gerenciamento do cluster.
+
+O nó master está marcado com o taint NoSchedule, assim o scheduler do Kubernetes não aloca pods no nó master, e procura outros nós no cluster sem essa marca.
+
+## NoExecute 
+
+O NoExecute remove os pods que não tem tolerância
+
+```bash
+# Adicionar um taint
+kubectl taint node elliot-02 key1=value1:NoExecute
+
+# Remover o taint
+kubectl taint node elliot-02 key1:NoExecute-
+```
