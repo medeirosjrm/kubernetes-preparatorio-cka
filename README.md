@@ -5,6 +5,10 @@
 
 [Tutorial](hyper-v/README.md)
 
+## Kind - Outra opção para o mini kube
+
+https://kind.sigs.k8s.io/
+
 
 ## Conceitos-chave do k8s
 É importante saber que a forma como o k8s gerencia os contêineres é ligeiramente diferente de outros orquestradores, como o Docker Swarm, sobretudo devido ao fato de que ele não trata os contêineres diretamente, mas sim através de pods. Vamos conhecer alguns dos principais conceitos que envolvem o k8s a seguir:
