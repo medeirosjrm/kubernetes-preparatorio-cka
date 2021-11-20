@@ -163,3 +163,19 @@ Session Affinity:  None
 Events:            <none>
 ```
 
+
+## Livenes, readness, startup probes
+
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+## Liveness 
+
+Saber se o pod está vivo 
+
+## Readness
+
+Para saber se o pod está pronto para uso
+
+## Startup
+
+Com o startup configurado os checks (liveness, readness) esperam para iniciar os testes 

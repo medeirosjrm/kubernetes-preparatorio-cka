@@ -71,7 +71,7 @@ Session Affinity:  None
 Events:            <none>
 ```
 
-**Importante**: Os endpoins são os endereços de cada replica do POD, quando quando olhamos o IP que está aparecendo no services será como um Load Balance que irá direcionar o trafego para cada ip de cada replica
+**Importante**: Os endpoins são os endereços de cada replica do POD, quando quando olhamos o IP que está aparecendo no services será como um Load Balance que irá direcionar o trafego para cada ip de cada replica 
 
 
 **Estrutura dos tipos**: 
