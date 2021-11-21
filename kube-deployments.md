@@ -126,3 +126,39 @@ Remover todas as labels dc de todos os nodes
 kubectl label nodes dc- --all
 ```
 
+## Stratefy
+
+
+```yaml
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      run: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 1  # quantidade máxima de pods que podem ultapassar o limite de replicas durante uma atualização
+      maxUnavailable: 1  # Quantidade de pods que podem ficarem indisponívels durante o update
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        dc: Netherlands
+        app: giropops
+        run: nginx
+spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx2
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        dc: Netherlands
+```

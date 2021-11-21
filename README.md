@@ -143,16 +143,13 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 * Mais informações em: https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
 
-
 ## Services
 
 [Readme](kube-service.md)
 
-
 ## Limits
 
 [Readme](kube-limits.md)
-
 
 ## Taints
 
@@ -166,6 +163,12 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 
 [Readme](kube-replicaset.md)
 
-...DemonSet...
+## DemonSet
+
+[Readme](kube-daemonset.md)
+
+## Rollouts e Rollbacks
+
+[Readme](kube-rollouts-rollbacks.md)
 
 
