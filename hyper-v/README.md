@@ -17,3 +17,20 @@
 
 
 https://www.youtube.com/watch?v=ug1c-F-wpuE
+
+
+## Configurando a rede do tipo bridge
+
+Passo 1: Configurar o novo adpador
+```
+Actions > Virtual Switch Manager > New virtual network switch > External
+
+Name: Bridge
+External Network: Selecionar a placa de rede
+Allow management operating system to share this network adapter : true
+```
+
+Passo 2: Vincular o adaptador a máquina virtual
+```
+Na máquina virtual > Configurações > Network Adapter > selecionar o adaptador criado acima
+```
