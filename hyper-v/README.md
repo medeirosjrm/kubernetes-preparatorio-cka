@@ -34,3 +34,34 @@ Passo 2: Vincular o adaptador a máquina virtual
 ```
 Na máquina virtual > Configurações > Network Adapter > selecionar o adaptador criado acima
 ```
+
+
+## Configurar os hosts e ip fixo
+
+```
+hostnamectl set-hostname kind
+
+nano /etc/hosts
+
+127.0.0.1       localhost
+127.0.1.1       kind
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+```
+
+```
+cat /etc/network/interfaces
+
+#The primary network interface
+auto eth0
+iface eth0  inet static
+ address 192.168.1.220
+ netmask 255.255.255.0
+ gateway 192.168.1.1
+ dns-domain debian.local
+ dns-nameservers 192.168.1.1
+
+```
