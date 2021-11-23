@@ -171,4 +171,10 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 
 [Readme](kube-rollouts-rollbacks.md)
 
+## Volumes
+
+[Readme](kube-volumes.md)
+
+
+... Persistent Volume
 
