@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: giropops-cron
+spec:
+  schedule: "*/1 * * * *"
+  failedJobsHistoryLimit: 3 
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec: 
+      template:
+        spec:
+          containers:
+          - name: giropops-cron
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Bem Vindo ao Descomplicando Kubernetes - LinuxTips VAIIII ;sleep 30
+          restartPolicy: OnFailure
+
+ # minutos  horas   dia   mes    dia-da-semana  comando
+ # */1      *       *     *      *              echo "a cada 1 minuto"      
+ # */1      1,2     1-10  *      *              echo "a cada 1 minuto das horas 01 e 02 da manhã do dia 1 até o dia 10"      
+ # 10       8       *     *      1-5            echo "as 8:10 de segunda a quinta"
+ # 0-59     0-23    1-31  1-12   0-7            echo "..."      

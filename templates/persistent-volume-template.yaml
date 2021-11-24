@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: primeiro-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteMany  # vários podem montar como RW ao mesmo tempo
+  #- ReadWriteOnce - Apenas um nó pode montar como RW ... Montando apenas por um pode para leitura e escrita
+  #- ReadOnlyMany - Pode ser montado e lido em todos os pods
+  persistentVolumeReclaimPolicy: Retain
+  # Retain - mantem os dados manualmente 
+  # Delete - ao excluir, são excluídos os dados também
+  nfs:
+    path: /opt/dados
+    server: 192.168.1.211
+    readOnly: false
