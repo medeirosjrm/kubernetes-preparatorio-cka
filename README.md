@@ -185,5 +185,9 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 
 [Readme](kube-configmap.md)
 
+## InitContainer
+
+[Readme](kube-initContainer.md)
+
 
 
