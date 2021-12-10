@@ -190,4 +190,22 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 [Readme](kube-initContainer.md)
 
 
+---
+
+## Bonde do CKA
+
+[Readme](questoes-prova/README.md)
+
+
+Faltam ver 
+
+- Preparatório CKA - Aula 02 - #BondeDoCKA
+- Preparatório CKA - Aula 03 - #BondeDoCKA
+- Preparatório CKA - Aula 04 - #BondeDoCKA
+- Preparatório CKA - Aula 05 - #BondeDoCKA
+- Preparatório CKA - Aula 06 - #BondeDoCKA
+
+- Day-1 Descomplicando o Helm - Aulas Twitch - 2021
+- Day-2 Descomplicando o Helm - Aulas Twitch - 2021
+
 
