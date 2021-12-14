@@ -151,3 +151,6 @@ data:
         - system:bootstrappers
         - system:nodes
 ```
+
+Exemplo de aplicação
+https://github.com/ricardomerces/guestbook-app
