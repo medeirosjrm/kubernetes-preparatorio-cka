@@ -55,7 +55,7 @@ eksctl create cluster -f cluster.yaml
 ```
 
 
-## Passo 3 Routes 53 -  DNS External
+## Passo 3 Routes 53  e Policy
 
 Para criar uma nova entrar no DNS como um subdomínio
 
@@ -90,12 +90,112 @@ IAM > Police > JSON
 Criar uma IAM Service 
 
 ```bash
-#opcional
+#opcional Se não tiver um IAM OIDC provides habilitado
 eksctl utils associate-iam-oidc-provider --region=us-east-1 --cluster cluester01 --approve
 
 eksctl create iamserviceaccount --name external-dns --namespace default --cluster cluester01 --attach-policy-arn arn:...  --approve
+
+
+# Para testar se está ok
+kubectl get sa   
+ou
+kubectl get serviceaccounts
+
+kubectl describe sa external-dns
 ```
 
-13:45
+## Passo 4 - External DNS
 
 
+https://peiruwang.medium.com/eks-exposing-service-with-external-dns-3be8facc73b9
+
+Oficial
+https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+  annotations:
+    eks.amazonaws.com/role-arn: arn...
+---    
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+- apiGroups: [""]
+  resources: ["services","endpoints","pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["extensions", "networking.k8s.oi"]
+  resources: ["ingresses"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+- kind: ServiceAccount
+  name: external-dns
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+  namespace: kube-system
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+      # If you're using kiam or kube2iam, specify the following annotation.
+      # Otherwise, you may safely omit it
+      # annotations:
+      #   iam.amazonaws.com/role: arn...
+    spec:
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        image: registry.opensource.zalan.do/teapot/external-dns:latest
+        args:
+        - --source=service
+        - --source=ingress
+        - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --provider=aws
+        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+        - --registry=txt
+        - --txt-owner-id=my-hostedzone-identifier #ID so route 53
+      securityContext:
+        fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token filesLoadBalancer 
+
+```
+
+```bash
+kubectl create -f external-dns.yaml
+
+kubectl get deploy
+kubectl get pods
+kubectl logs -f external-pod-name
+```
+
+
+
+Configurando o cert-manager e testando o external-dns 
+https://school.linuxtips.io/courses/1259521/lectures/36215277
