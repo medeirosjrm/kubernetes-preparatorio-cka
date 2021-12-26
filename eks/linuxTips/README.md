@@ -199,3 +199,38 @@ kubectl logs -f external-pod-name
 
 Configurando o cert-manager e testando o external-dns 
 https://school.linuxtips.io/courses/1259521/lectures/36215277
+
+
+
+## Passo 4 - Cert manager
+
+https://cert-manager.io/docs/installation/helm/
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+#kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
+
+helm upgrade \
+  cert-manager jetstack/cert-manager \
+  --install \
+  --namespace cert-manager \
+  --create-namespace \
+  --values "cert-manager-values.yaml" --wait
+```
+
+```yaml
+serviceAccount: 
+  annotations:
+    eks.amazonaws.com/role-arn: arn...
+
+installCRDS: true
+
+secyrityContext:
+  enabled: true
+  fsGroup: 1001
+```
+
+
+

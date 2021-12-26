@@ -190,7 +190,14 @@ Todos os IPs dos pods e nodes são roteados sem a utilização de NAT. Isso é s
 [Readme](kube-initContainer.md)
 
 
----
+## Ingress
+
+[Readme](ingress/README.md)
+
+
+https://school.linuxtips.io/courses/1259521/lectures/28043176
+
+
 
 ## Bonde do CKA
 
