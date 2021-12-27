@@ -32,8 +32,10 @@ spec:
 ```
 
 Config map
-```
-kubectl create configmap apps-configmap --from-file app1=index-app1.html --from-file app2=index-app2.html
+```bash
+kubectl create configmap cmap-app1 --from-file index.html=index-app1.html 
+kubectl create configmap cmap-app2 --from-file index.html=index-app2.html 
+#kubectl create configmap apps-configmap --from-file app1=index-app1.html --from-file app2=index-app2.html
 ```
 
 Ingress - Parte 02
