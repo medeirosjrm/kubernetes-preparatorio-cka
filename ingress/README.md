@@ -30,3 +30,10 @@ spec:
         - containerPort: 80
 
 ```
+
+Config map
+```
+kubectl create configmap apps-configmap --from-file app1=index-app1.html --from-file app2=index-app2.html
+```
+
+Ingress - Parte 02

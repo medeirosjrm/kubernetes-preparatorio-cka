@@ -82,7 +82,7 @@ uva='roxa'
 
 Agora via aquivo
 
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:

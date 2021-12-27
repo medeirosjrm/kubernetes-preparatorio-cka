@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+      - image: nginx:1.18.0
+        name: app2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: vol-apps-configmap
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+          #readOnly: true
+
+      volumes:
+        # K8s ConfigMap
+        - name: vol-apps-configmap
+          configMap:
+            name: cmap-app2   
