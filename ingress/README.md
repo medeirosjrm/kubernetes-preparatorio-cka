@@ -84,6 +84,8 @@ kubectl create -f default-backend-service.yaml -n ingress
 service/default-backend created
 ```
 
+## Configurações do ingress
+
 Agora crie o um arquivo para definir um configMap a ser utilizado pela nossa aplicação:
 ```bash
 vim nginx-ingress-controller-config-map.yaml
