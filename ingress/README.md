@@ -96,6 +96,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-ingress-controller-conf
+  namespace: ingress
   labels:
     app: nginx-ingress-lb
 data:
@@ -113,6 +114,11 @@ kubectl get configmaps -n ingress
 
 vim nginx-ingress-controller-service-account.yaml
 ```
+
+Parte 03
+https://school.linuxtips.io/courses/1259521/lectures/28043179
+
+## Definindo as permissões do ingress
 
 Vamos criar os arquivos para definir as permissões para o nosso deployment:
 ```yaml
