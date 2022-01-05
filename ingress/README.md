@@ -112,13 +112,18 @@ configmap/nginx-ingress-controller-conf created
 kubectl get configmaps -n ingress
 
 
-vim nginx-ingress-controller-service-account.yaml
 ```
+
+## Definindo as permissões do ingress
+
 
 Parte 03
 https://school.linuxtips.io/courses/1259521/lectures/28043179
 
-## Definindo as permissões do ingress
+```
+vim nginx-ingress-controller-service-account.yaml
+```
+
 
 Vamos criar os arquivos para definir as permissões para o nosso deployment:
 ```yaml
@@ -188,4 +193,94 @@ rules:
   - create
 ```
 
-ingress 03
+```bash
+vim nginx-ingress-controller-clusterrolebinding.yaml
+```
+
+```yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nginx-role
+  namespace: ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-role
+subjects:
+- kind: ServiceAccount
+  name: nginx
+  namespace: ingress
+```
+
+```bash
+vim nginx-ingress-controller-deployment.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ingress-lb
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress-lb
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccount: nginx
+      containers:
+        - name: nginx-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          args:
+            - /nginx-ingress-controller
+            - --default-backend-service=ingress/default-backend
+            - --configmap=ingress/nginx-ingress-controller-conf
+            - --v=2
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 80
+            - containerPort: 18080
+```
+
+
+https://school.linuxtips.io/courses/1259521/lectures/28043179
+
+13 minutos
+
+
+```bash
+
+```
+
+```yaml
+
+```
+
