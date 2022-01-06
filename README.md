@@ -66,6 +66,10 @@ echo "[[ $commands[kubectl] ]] && source <(kubectl completion zsh)"
 
 ```
 
+## Instalação do K8s com 3 nós
+
+[Readme](kube-install.md)
+
 ## Kubectl namespace
 
 [Readme](kube-namespace.md)
