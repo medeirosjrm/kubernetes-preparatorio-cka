@@ -18,7 +18,7 @@ ff02::2 ip6-allrouters
 ```
 
 ```
-cat /etc/network/interfaces
+nano /etc/network/interfaces
 
 #The primary network interface
 auto eth0
@@ -75,7 +75,8 @@ Dar permissão para o grupo
 usermod -aG sudo silva
 ```
 
-Conferir o arquivo /etc/sudoers
+Conferir o arquivo 
+cat /etc/sudoers
 ```
 # Allow members of group sudo to execute any command
 %sudo   ALL=(ALL:ALL) ALL
@@ -259,3 +260,21 @@ source /usr/share/bash-completion/bash_completion
 echo 'source <(kubectl completion bash)' >>~/.bashrc
 ```
 
+### Configurando os nós
+
+Ver o passo ## Configurar os hosts e ip fixo
+
+Exibir novamente o comando de join
+
+```
+sudo kubeadm token create --print-join-command
+```
+
+
+## Instalação do pod network
+
+```
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+kubectl get pods -n kube-system
+```
