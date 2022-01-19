@@ -284,3 +284,32 @@ https://school.linuxtips.io/courses/1259521/lectures/28043179
 
 ```
 
+```
+https://github.com/badtuxx/ingress
+
+kubectl create -f app-deployment.yaml
+kubectl create -f app-service.yaml
+kubectl get pods
+kubectl get ep
+kubectl create namespace ingress
+kubectl create -f default-backend-deployment.yaml -n ingress
+kubectl create -f default-backend-service.yaml -n ingress
+kubectl get deployments. -n ingress
+kubectl get service
+kubectl get service -n ingress
+kubectl create -f nginx-ingress-controller-config-map.yaml -n ingress
+kubectl create -f nginx-ingress-controller-roles.yaml -n ingress
+kubectl create -f nginx-ingress-controller-deployment.yaml -n ingress
+kubectl create -f nginx-ingress-controller-service.yaml -n=ingress
+kubectl get pods
+kubectl get pods -n ingress
+kubectl create -f nginx-ingress.yaml -n ingress
+kubectl create -f app-ingress.yaml
+kubectl get pods -n ingress
+kubectl get pods
+kubectl get services
+kubectl get services -n ingress
+kubectl get ingress
+kubectl get deploy
+kubectl get deploy -n ingress
+```
