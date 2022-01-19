@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+spec:
+  rules:
+  - host: nginx-ingress.local # Mude para o seu endereço dns
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx-ingress
+            port:
+              number: 18080
+        path: /nginx_status
+        pathType: Prefix
