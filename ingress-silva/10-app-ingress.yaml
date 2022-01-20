@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: app.localdev.me #apps.local # Mude para o seu endereço dns
+  - host: app.localdev.me # Mude para o seu endereço dns
     http:
       paths:
       - backend:
