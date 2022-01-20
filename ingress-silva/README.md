@@ -6,6 +6,33 @@ https://kubernetes.github.io/ingress-nginx/deploy/
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
 ```
+
+Criar os 10 arquivos com o comando
+
+```
+kubectl create -f 01...
+```
+
+Usar o comando port-forward para testar se a configuração está correta
+```
+kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80
+```
+
+Em outro terminal tente acessar as aplicações com o comando
+```
+
+curl http://app.localdev.me:8080/app1
+
+curl http://app.localdev.me:8080/app2
+
+```
+
+
+
+
+Revisar conteúdo abaixo
+-- 
+
 ## O que é o Ingress
 
 Normalmente quando executamos um Pod no Kubernetes, todo o tráfego é roteado somente pela rede do cluster, e todo tráfego externo acaba sendo descartado ou encaminhado para outro local. Um ingress é um conjunto de regras para permitir que as conexões externas de entrada atinjam os serviços dentro do cluster
@@ -91,23 +118,4 @@ service/default-backend created
 ```
 
 
-Depois de criar os 10 arquivos com o comando
-
-```
-kubectl create -f 01...
-```
-
-Pode usar o comando port-forward para testar se a configuração está correta
-```
-kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80
-```
-
-Em outro terminal tente acessar as aplicações com o comando
-```
-
-curl http://app.localdev.me:8080/app1
-
-curl http://app.localdev.me:8080/app2
-
-```
 
