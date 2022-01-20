@@ -91,3 +91,23 @@ service/default-backend created
 ```
 
 
+Depois de criar os 10 arquivos com o comando
+
+```
+kubectl create -f 01...
+```
+
+Pode usar o comando port-forward para testar se a configuração está correta
+```
+kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80
+```
+
+Em outro terminal tente acessar as aplicações com o comando
+```
+
+curl http://app.localdev.me:8080/app1
+
+curl http://app.localdev.me:8080/app2
+
+```
+
