@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default-backend
+  namespace: ingress
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: default-backend
+  template:
+    metadata:
+      labels:
+        app: default-backend
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: default-backend
+        image: nginx:1.18.0
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: vol-default-backend-configmap
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+        - name: vol-default-backend-configmap
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 10m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+      
+      volumes:
+        # K8s ConfigMap
+        - name: vol-default-backend-configmap
+          configMap:
+            name: cmap-default-backend  

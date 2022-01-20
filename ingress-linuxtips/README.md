@@ -313,3 +313,15 @@ kubectl get ingress
 kubectl get deploy
 kubectl get deploy -n ingress
 ```
+
+
+kubectl delete -f app-deployment.yaml
+kubectl delete -f app-service.yaml
+kubectl delete -f default-backend-deployment.yaml -n ingress
+kubectl delete -f default-backend-service.yaml -n ingress
+kubectl delete -f nginx-ingress-controller-config-map.yaml -n ingress
+kubectl delete -f nginx-ingress-controller-roles.yaml -n ingress
+kubectl delete -f nginx-ingress-controller-deployment.yaml -n ingress
+kubectl delete -f nginx-ingress-controller-service.yaml -n=ingress
+kubectl delete -f nginx-ingress.yaml -n ingress
+kubectl delete -f app-ingress.yaml
