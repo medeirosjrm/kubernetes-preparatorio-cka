@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: app-localhost
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: exchangerates.exemplo.com # Mude para o seu endereço dns
+    http:
+      paths:
+      - backend:
+          service:
+            name: exchanges_svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+
+  - host: gateway.exemplo.com # Mude para o seu endereço dns
+    http:
+      paths:
+      - backend:
+          service:
+            name: gateway_svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+
