@@ -222,16 +222,27 @@ coredns
 
 ## Questão 2
 
-Precisamos criar um pod com as seguintes caracteristicas:
- - Precisa ter um container rodando a imagem do Nginx, com um volume montado no diretorio html do nginx.
- - Precisa ter um outro container rodando busybox e adicionando algum conteúdo ao arquivo /tmp/index.html
+Precisamos criar um pod com 3 container que irão complementar a informação entre os container.
+O primeiro container será um nginx que receberá dados no arquivo index.html para que a comunicação entre os container ocorra eles irão compartilar o mesmo volume, no caso o volume workdir
 
+O container 2 será um busybox que salvará dados no arquivo index.html utilzando o comando abaixo
 ```bash
 => command: ["sh", "-c", "while true; do uname -a >> /tmp/index.html; date >> /tmp/index.html; sleep 2; done"]
 ```
-Precisamos ter um outro container rodando o busybox e executando o seguinte comando:
+O container 3 será outro busybox que ficará monitorando conteudo do arquivo index.html com o comando abaixo.
 ```bash
 => command: ["sh", "-c", "tail -f /tmp/index.html"]
 ```
 
-1:32
+## reposta
+
+```
+kubectl run container01 --image nginx:1.18.0 --port 80 --dry-run=client -o yaml > pod.yaml
+
+kubectl create -f day-02/pod.yaml
+
+kubectl logs -f meu-pod container-1
+kubectl logs -f meu-pod container-2
+kubectl logs -f meu-pod container-3
+kubectl exec -ti meu-pod -c container-1 -- bash
+```
