@@ -246,3 +246,68 @@ kubectl logs -f meu-pod container-2
 kubectl logs -f meu-pod container-3
 kubectl exec -ti meu-pod -c container-1 -- bash
 ```
+
+
+## Day 03
+
+<br>
+
+### Questão 01 -  Criar um pod estático utilizando a imagem do nginx.
+
+https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/
+
+Post estático é um pod que é criado no manifesto do kubernet, e gerenciado pelo nó onde foi criado o manifesto
+
+>The kubelet automatically tries to create a mirror Pod on the Kubernetes API server for each static Pod. This means that the Pods running on a node are visible on the API server, but cannot be controlled from there. The Pod names will be suffixed with the node hostname with a leading hyphen.
+
+
+```bash
+cd /etc/kubernetes/manifests
+k run giropops --image nginx -o yaml --dry-run=client > meu-pod-estatico.yaml
+
+sudo mv meu-pod-estatico.yaml > /etc/kubernetes/manifests/
+
+systemctl restart kubelet
+```
+
+### Questão 02 - O nosso gerente está assustado, pois conversando com o gerente de uma outra empresa, ficou sabendo que aconteceu uma indisponibilidade no ambiente Kubernetes de lá por conta de certificados expirados. Ele está demasiadamente preocupado. Ele quer que tenhamos a certeza de que nosso cluster não corre esse perigo, portanto, adicione no arquivo /tmp/meus-certificados.txt todos eles e suas datas de expiração.
+
+Resposta 01: 
+Os certificados, por padrao, ficam no diretório /etc/kubernetes/pki. Para que você possa verificar a data de expiração, você pode utilizar o comando openssl, conforme abaixo:
+```bash
+cd /etc/kubernetes/pki
+openssl x509 -noout -text -in apiserver.crt | grep -i "not after"
+```
+
+Resposta 02: 
+Lembrar de adicionar a data de expiração no arquivo solicitado na questão.
+
+Caso queira fazer de uma forma mais bonitinha, e automagicamente pegar as datas e já adicionar ao arquivo, faça conforme abaixo:
+```bash
+find /etc/kubernetes/pki/ -iname "apiserver*crt" -exec openssl x509 -noout -subject -enddate -in {} \; >> /tmp/meus-certificados.txt
+```
+
+Resposta 03: 
+
+```bash
+kubeadm certs check-expiration >> /tmp/meus-certificados.txt
+```
+
+### Questão 03 - Pois bem, vimos que precisamos atualizar o nosso cluster imediatamente, sem trazer nenhum indisponibilidade para o ambiente. Como devemos proceder?
+
+Pois bem, vimos que precisamos atualizar o nosso cluster imediatamente, sem trazer nenhum indisponibilidade para o ambiente. Como devemos proceder?
+
+Resposta: 
+Podemos utilizar o comando kubeadm certs para visualizar as datas corretas e tbm para realizar sua renovação. Conforme estamos fazendo abaixo:
+```bash
+kubeadm certs renew all
+```
+
+Lembrando a importância de realizar o procedimento em todos os nodes master. Lembre se restartar o apiserver, controller, scheduller e o etcd. Para isso, você pode utilizar o comando docker stop, de dentro do node que está sendo atualizado.
+
+
+> You must restart the kube-apiserver, kube-controller-manager, kube-scheduler and etcd, so that they can use the new certificates.
+```
+sudo systemctl restart kubelet
+
+```
