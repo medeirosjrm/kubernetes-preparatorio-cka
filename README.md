@@ -208,15 +208,15 @@ https://school.linuxtips.io/courses/1259521/lectures/28043176
 [Readme](questoes-prova/README.md)
 
 
-Faltam ver 
 
-- Preparatório CKA - Aula 02 - #BondeDoCKA
-- Preparatório CKA - Aula 03 - #BondeDoCKA
-- Preparatório CKA - Aula 04 - #BondeDoCKA
-- Preparatório CKA - Aula 05 - #BondeDoCKA
-- Preparatório CKA - Aula 06 - #BondeDoCKA
+
 
 - Day-1 Descomplicando o Helm - Aulas Twitch - 2021
 - Day-2 Descomplicando o Helm - Aulas Twitch - 2021
 
+
+
+Oracle k8s
+
+https://github.com/jpetazzo/ampernetacle
 
