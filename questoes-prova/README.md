@@ -311,3 +311,59 @@ Lembrando a importância de realizar o procedimento em todos os nodes master. Le
 sudo systemctl restart kubelet
 
 ```
+
+
+
+## Day 04
+
+<br>
+
+### Questão 01 - Precisamos subir um container em um node master. Esse container tem que estar rodando a imagem do nginx, o nome do pod é pod-web e o container é container-web. Sua namespace será a catota.
+
+Resposta:
+```bash
+kubectl run pod-web --image nginx -o yaml --dry-run=client > pod-web.yaml
+
+kubectl get nodes
+kubectl describe node kube-m1
+
+kubectl describe node kube-m1 | grep NoSchedule
+-> Taints:             node-role.kubernetes.io/master:NoSchedule
+```
+Node com o Taints NoSchedule não aceitam receber novos pods (mas mantem todos que já estão no nó)
+
+>NoExecute ele remove todos os pods enviando para outros nós que possam receber esses pods
+
+```bash
+kubectl create ns catota
+kubectl create -f pod-web.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pod-web
+  name: pod-web
+  namespace: catota
+spec:
+  containers:
+  - image: nginx
+    name: container-web
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  tolerations: 
+  - effect: NoSchedule
+    operator: Equal
+    key: node-role.kubernetes.io/master
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+
+```
+
+https://school.linuxtips.io/courses/1259521/lectures/36504168
+
+Parei: 1:
