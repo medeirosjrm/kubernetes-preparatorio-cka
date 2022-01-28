@@ -363,7 +363,99 @@ spec:
     node-role.kubernetes.io/master: ""
 
 ```
+### Questão 02 - Precisamos de algumas informações do nosso cluster e dos pods que lá estão. Portanto, precisamos do seguinte:
 
-https://school.linuxtips.io/courses/1259521/lectures/36504168
+ 01) Adicione todos os pods do cluster por ordem de criação, dentro do arquivo /tmp/pods.txt
+Respota 01
+```bash
+kubectl describe pods pod-01
+kubectl get pod pod-01 -o yaml
 
-Parei: 1:
+#Com a saida o yaml conseguimos ver qual o caminho que a informação se encontra
+--------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-01-22T01:19:42Z"  <--
+--------------------
+
+kubectl get pod --help
+kubectl get pods --sort-by='.metadata.creationTimestamp'
+
+#Exibe todos os pods ordenados
+kubectl get pods -A --sort-by='metadata.creationTimestamp'
+#Exibe apena o nome
+kubectl get pods -A --sort-by='metadata.creationTimestamp' -o name > /tmp/pods.txt
+#Permite customizar as colunas
+kubectl get pods -A --sort-by='metadata.creationTimestamp' -o custom-columns=:.metadata.namespace,:.metadata.name > /tmp/pods.txt
+
+```
+
+02)  Remova um pod do weave, verifique os eventos e os adicione no arquivo /tmp/eventos.txt
+
+```bash
+kubectl get pods -n kube-system
+
+kubectl get events -A --sort-by=.metadata.creationTimestamp
+
+#Matando o evento
+kubectl delete pod -n kube-system weave-net-nwhvq
+
+#Salvando no arquivo
+kubectl get events -A --sort-by=.metadata.creationTimestamp > /tmp/events.txt
+```
+
+
+
+ 03)  Liste todos os pods que estão em execução no seul-cool-5 e os adicione no arquivo /tmp/pods-node-05.txt
+
+```
+kubectl get pod -o yaml app1-679bb7fc98-jkls5
+-----------
+spec:
+  ...
+  nodeName: kube-w2
+
+kubectl get pods -A --field-selector='spec.nodeName=kube-w2'
+
+kubectl get pods -A --field-selector='spec.nodeName=kube-w2' > /tmp/pods-kube-w2.txt
+```
+
+
+## Day 05
+
+<br>
+
+O ETCD é o banco de dados do cluster, somente o api service que tem acesso ao ETCD
+
+Backing up an etcd cluster 
+https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+
+### Questão 01 
+
+O nosso gerente solicitou que seja feita agora, um backup/snapshot do nosso ETCD. Ele ficou muito assustado em saber que se perdermos o ETCD, perderemos o nosso cluster e, consequentemente, a nossa tranquilidade! Portanto, bora fazer esse snapshot imediatamente!
+
+```
+sudo apt install etcd-client
+
+ssh node-master # Um dos nodes onde o ETCD está em execução.
+cd /etc/kubernetes/manifests
+cat etcd.yaml
+grep etcd kube-apiserver.yaml
+
+# Com essas informaçoes, já podemos criar o nosso snapshot
+ETCDCTL_API=3 etcdctl snapshot save snap_do_gerente.db --key /etc/kubernetes/pki/apiserver-etcd-client.key --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/apiserver-etcd-client.crt
+
+
+ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/apiserver-etcd-client.crt --key=/etc/kubernetes/pki/apiserver-etcd-client.key snapshot save snap-do-gerente.db
+```
+https://school.linuxtips.io/courses/1259521/lectures/36458095
+1:10:00
+
+### Questão 02
+
+Muito bem, o gerente está feliz, mas não perfeitamente explendido em sua felicidade! A pergunta do gerente foi a seguinte: Você já fez o restore para testar o nosso snapshot? EU QUERO TESTAR AGORA!
+
+```
+ETCDCTL_API=3 etcdctl snapshot restore snap_do_gerente.db --data-dir /tmp/etcd-test
+```
