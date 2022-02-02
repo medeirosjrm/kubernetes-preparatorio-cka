@@ -1,6 +1,33 @@
 # Questões CKA
 
 
+## Documentações:
+
+Certified Kubernetes Application Developer (CKAD)
+https://www.cncf.io/certification/ckad/
+
+Simulado
+https://www.katacoda.com/ckad-prep/scenarios/first-steps
+
+Tasks
+https://kubernetes.io/docs/tasks/
+
+Exercises
+https://github.com/dgkanatsios/CKAD-exercises
+
+
+
+## Autocomplete
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
+```bash
+source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+```
+
+
+
+
 ## Day 01
 
 <br>
@@ -431,9 +458,7 @@ O ETCD é o banco de dados do cluster, somente o api service que tem acesso ao E
 Backing up an etcd cluster 
 https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
 
-### Questão 01 
-
-O nosso gerente solicitou que seja feita agora, um backup/snapshot do nosso ETCD. Ele ficou muito assustado em saber que se perdermos o ETCD, perderemos o nosso cluster e, consequentemente, a nossa tranquilidade! Portanto, bora fazer esse snapshot imediatamente!
+### Questão 01 - O nosso gerente solicitou que seja feita agora, um backup/snapshot do nosso ETCD. Ele ficou muito assustado em saber que se perdermos o ETCD, perderemos o nosso cluster e, consequentemente, a nossa tranquilidade! Portanto, bora fazer esse snapshot imediatamente!
 
 ```
 sudo apt install etcd-client
@@ -449,13 +474,52 @@ ETCDCTL_API=3 etcdctl snapshot save snap_do_gerente.db --key /etc/kubernetes/pki
 
 ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/apiserver-etcd-client.crt --key=/etc/kubernetes/pki/apiserver-etcd-client.key snapshot save snap-do-gerente.db
 ```
-https://school.linuxtips.io/courses/1259521/lectures/36458095
-1:10:00
 
-### Questão 02
 
-Muito bem, o gerente está feliz, mas não perfeitamente explendido em sua felicidade! A pergunta do gerente foi a seguinte: Você já fez o restore para testar o nosso snapshot? EU QUERO TESTAR AGORA!
+### Questão 02 - Muito bem, o gerente está feliz, mas não perfeitamente explendido em sua felicidade! A pergunta do gerente foi a seguinte: Você já fez o restore para testar o nosso snapshot? EU QUERO TESTAR AGORA!
 
 ```
 ETCDCTL_API=3 etcdctl snapshot restore snap_do_gerente.db --data-dir /tmp/etcd-test
 ```
+
+
+## Day 06
+
+### Questão 01 - O nosso gerente observou no dashboard do Lens que um dos nossos nodes não está bem. Temos algum problema com o nosso cluster e precisamos resolver agora.
+
+Respota:
+```bash
+kubectl get nodes
+ssh node_com_problema
+ps -ef | grep kubelet
+docker ps
+systemctl status kubelet
+journalctl -u kubelet
+whereis kubelet
+vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf # ARRUMAR O PATH DO
+# systemctl edit --full kubelet # ainda podemos usar esse comando ao inves de
+# alterar o arquivo
+BINARIO DO KUBELET
+systemctl daemon-reload
+systemctl restart kubelet
+systemctl status kubelet
+journalctl -u kubelet
+```
+
+```bash
+#Alternativa
+sudo systemctl edit --full kubelet
+```
+
+
+### Questao 02 - Temos um secret com o nome e senha de um usuário que nossa aplicação irá utilizar, precisamos colocar esse secret em um pod. Detalhe: Esse secret deve se tornar uma variável de ambiente dentro do container.
+
+Respota:
+```bash
+
+kubectl create secret generic credentials --from-literal user=silva --from-literal password=senha1 --dry-run=client -o yaml > meu_secret.yaml
+
+```
+
+https://school.linuxtips.io/courses/1259521/lectures/36504170
+1:01:05
