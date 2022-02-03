@@ -8,6 +8,8 @@ https://www.cncf.io/certification/ckad/
 
 Simulado
 https://www.katacoda.com/ckad-prep/scenarios/first-steps
+https://killer.sh/
+
 
 Tasks
 https://kubernetes.io/docs/tasks/
@@ -519,7 +521,52 @@ Respota:
 
 kubectl create secret generic credentials --from-literal user=silva --from-literal password=senha1 --dry-run=client -o yaml > meu_secret.yaml
 
+kubectl create -f meu_secret.yaml
+
+kubectl run giropops --image nginx --dry-run=client -o yaml > pod_com_secret.yaml
+
+kubectl create -f pod_com_secret.yaml
 ```
 
-https://school.linuxtips.io/courses/1259521/lectures/36504170
-1:01:05
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: giropops
+  name: giropops
+spec:
+  containers:
+  - image: nginx
+    name: giropops
+    resources: {}
+    env:
+    - name: MEU_USER
+      valueFrom:
+        secretKeyRef:
+          name: credentials
+          key: user
+    - name: MEU_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: credentials
+          key: password
+    volumeMounts:
+    - name: credentials
+      mountPath: /opt/giropops
+      
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+
+  volumes:
+  - name: credentials
+    secret:
+      secretName: credentials
+```
+
+
+
+
+https://school.linuxtips.io/courses/1259521/lectures/36978804
+34:30
