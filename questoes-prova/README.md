@@ -567,6 +567,84 @@ spec:
 
 
 
+## Day 07
+
+### Questão 01 - Precisamos subir um pod, fácil não? Porém esse pod somente poderá ficar disponível quando um determinado service estiver no ar. O serviço deverá ser um simples Nginx. O pod, nós teremos mais detalhes durante a resolução.
+
+
+Respota:
+```bash
+ k run waiting-nginx --image nginx --dry-run=client -o yaml > waiting-nginx.yaml
+ kubectl create -f waiting-nginx.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: waiting-nginx
+  name: waiting-nginx
+spec:
+  containers:
+  - image: nginx
+    name: waiting-nginx
+    resources: {}
+    livenessProbe:
+      exec:
+        command:
+        - 'true'
+    readinessProbe:
+      exec:
+        command:
+        - sh
+        - c
+        - 'curl http://my-nginx:80'
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+
+```bash
+ kubectl run my-nginx --image nginx --dry-run=client -o yaml > my-nginx.yaml
+ kubectl create -f my-nginx.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: my-nginx
+  name: my-nginx
+spec:
+  containers:
+  - image: nginx
+    name: my-nginx
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+```bash
+kubectl create -f my-nginx.yaml
+kubectl expose pod my-nginx
+
+kubectl get pods
+kubectl describe pods giropops
+```
+
+
+
+
+
+
 
 https://school.linuxtips.io/courses/1259521/lectures/36978804
 34:30
