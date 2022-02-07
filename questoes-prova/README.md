@@ -572,6 +572,10 @@ spec:
 ### Questão 01 - Precisamos subir um pod, fácil não? Porém esse pod somente poderá ficar disponível quando um determinado service estiver no ar. O serviço deverá ser um simples Nginx. O pod, nós teremos mais detalhes durante a resolução.
 
 
+OBS: 
+  livenessProbe indica se o pod está vivo
+  readinessProbe indica se o pod está pronto para receber requesições
+
 Respota:
 ```bash
  k run waiting-nginx --image nginx --dry-run=client -o yaml > waiting-nginx.yaml
@@ -642,9 +646,180 @@ kubectl describe pods giropops
 
 
 
+## Day 08
+
+### Questão 01 - Hoje o nosso gerente pediu para que fiquemos confortáveis com o gerenciamento de contextos do nossos clusters. Ele está com medo de que executemos algo em ulgum cluster errado, e assim deixando o nosso dia muito mais chatiante!
+
+
+Resposta 1 (clique para ver a resposta)
+Criamos dois clusters, para que pudessemos brincar com os contextos. Para criar os cluster, nós utilizamos o Kind, e para criar o cluster, nós estamos utilizando um arquivo template, conforme abaixo:
+
+kind-cluster-1.yaml
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+```
+
+```bash
+kind create cluster --name lt-01 --config kind-cluster-1.yaml
+```
+
+kind-cluster-2.yaml
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+```
+
+```bash
+kind create cluster --name giropops-01 --config kind-cluster-2.yaml
+```
+
+
+Agora que os nossos clusters já estão criados, bora brincar com os contextos.
+
+Para visualizar os contextos, utilize o comando abaixo:
+
+```bash
+kubectl config get-contexts
+```
+
+Para selecionar determinado contexto, utilize:
+
+```bash
+kubectl config use-context CONTEXTO_DESEJADO
+```
+
+Vale lembrar que os contextos estão definidos no seu arquivo config, na maioria dos casos no ${HOME}/.kube/config.
+
+
+### Questão 02 - Precisamos criar um pod com o Nginx rodando no cluster lt-01, já no cluster giropops-01, nós precisamos ter um deployment do Nginx e um service apontando para esse deployment. Os containers deverão ter o mesmo nome em todos os cluster e estarem rodando no namespace strigus.!
+
+```bash
+kubectl config current-context
+kubectl config use-context kind-lt-01
+kubectl run --image nginx strigus-01 --port 80 --namespace strigus --dry-run=client -o yaml > meu_pod.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: strigus-01
+  name: strigus-01
+  namespace: strigus
+spec:
+  containers:
+  - image: nginx
+    name: strigus-01
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+```bash
+kubectl create ns strigus
+kubectl create -f meu_pod.yaml
+```
+
+Trocando de contexto
+
+```bash
+kubectl config current-context
+kubectl config use-context kind-giropops-01
+
+kubectl create deployment giropops --image nginx --port 80 --namespace strigus --dry-run=client -o yaml > meu_deployment.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: giropops
+  name: giropops
+  namespace: strigus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: giropops
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: giropops
+    spec:
+      containers:
+      - image: nginx
+        name: strigus-01
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
+```
+
+```bash
+kubectl create ns strigus
+kubectl create -f meu_deployment.yaml
+kubectl expose deployment --namespace strigus giropops
+
+
+```
+
+Note que temos containers rodando.
+
+```bash
+docker container ls --filter "label=io.x-k8s.kind.role"
+```
+
+Vamos deletar os 2 clusters criados anteriormente.
+```bash
+kind delete cluster --name lt-01
+kind delete cluster --name giropops-01
+```
+
+
+## Day 09
+
+### Questão 01 - Nosso gerente precisa reportar para o nosso diretor, quais as namespaces que nós temos hoje em produção. Salvar a lista de namespaces no arquivo /tmp/giropops-k8s.txt
+
+```bash
+kubectl get ns --no-headers -o custom-columns=":metadata.name" > /tmp/list-namespaces
+```
+
+### Questão 02 - Precisamos criar um pod chamado web e utilizando a imagem do Nginx na versão 1.21.4. O pod deverá ser criado no namespace web-1 e o container deverá se chamar meu-container-web. O nosso gerente pediu para que seja criado um script que retorne o status desse pod que iremos criar. O nome do script é /tmp/script-do-gerente-toskao.sh
+
+
+```bash
+kubectl create ns web-1
+kubectl run meu-container-web --image nginx:1.21.4 --port 80 --dry-run=client -o yaml > meu-container-web.yaml
+
+#Para descobrir a estrutuda de dados para usar no custom-columns
+kubectl get  pods -n web-1 meu-container-web -o yaml
+
+kubectl get pods -n web-1 -o custom-columns=":metadata.name, :status.phase"
+
+```
 
 
 
+https://school.linuxtips.io/courses/1259521/lectures/36978807
 
-https://school.linuxtips.io/courses/1259521/lectures/36978804
-34:30
+1:00:00
+
+
+
