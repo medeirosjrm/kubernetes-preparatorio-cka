@@ -9,6 +9,8 @@ https://www.cncf.io/certification/ckad/
 Simulado
 https://www.katacoda.com/ckad-prep/scenarios/first-steps
 https://killer.sh/
+https://github.com/walidshaari/Kubernetes-Certified-Administrator
+
 
 
 Tasks
