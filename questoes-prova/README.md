@@ -813,13 +813,94 @@ kubectl get  pods -n web-1 meu-container-web -o yaml
 
 kubectl get pods -n web-1 -o custom-columns=":metadata.name, :status.phase"
 
+echo 'kubectl get pods -n web-1 -o custom-columns=":metadata.name, :status.phase"' > /tmp/script-status-pod-meu-web-container.sh
+
+chmod +x /tmp/script-status-pod-meu-web-container.sh
+/tmp/script-status-pod-meu-web-container.sh
+
 ```
 
+
+### Questão 3 - Criamos o pod do Nginx, parabéns! 
+
+- TASK-1: Portanto, agora precisamos mudar a versão do Nginx para a versão 1.18.0, pois o
+nosso gerente viu um artigo no Medium e disse que agora temos que usar essa
+versão e ponto.
+
+<details>
+  <summary><b>Resposta TASK-1</b> <em>(clique para ver a resposta)</em></summary>
+>Quando usamos apenas pods não conseguimos alterar a imagem usando set e nem rollout, para isso precisamos de um deployment 
+
+```bash
+kubectl edit pods -n web-1 web
+```
+</details>
+
+- TASK-2: Precisamos criar um deployment no lugar do nosso pod do Nginx
+
+<details>
+  <summary><b>Resposta TASK-2</b> <em>(clique para ver a resposta)</em></summary>
+
+```bash
+kubectl create deployment web --image nginx:1.20.2 --dry-run=client -o yaml > deployment.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+  namespace: web-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: nginx:1.20.2
+        name: meu-container-web
+        resources: {}
+status: {}
+```
+</details>
+
+- TASK-3: Precisamos utilizar o Nginx com a imagem do Alpine, pq o gerente leu um outro artigo no Medium.
+
+<details>
+  <summary><b>Resposta TASK-3</b> <em>(clique para ver a resposta)</em></summary>
+
+```bash
+kubectl edit deployment -n web-1 web
+```
+</details>
+
+- TASK-4: Precisamos realizar o rollback do nosso deployment web
+
+<details>
+  <summary><b>Resposta TASK-4</b> <em>(clique para ver a resposta)</em></summary>
+
+```bash
+kubectl rollout history deployment -n web-1 web
+kubectl rollout history deployment -n web-1 web --revision=1
+kubectl rollout history deployment -n web-1 web --revision=2
+kubectl rollout undo deployment -n web-1 web --to-revision=1
+```
+</details>
 
 
 https://school.linuxtips.io/courses/1259521/lectures/36978807
 
-1:00:00
+1:20:00
 
 
 
