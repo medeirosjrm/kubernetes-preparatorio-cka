@@ -5,6 +5,7 @@ metadata:
   labels:
     app: web
   name: web
+  namespace: web-1
 spec:
   replicas: 1
   selector:
@@ -19,6 +20,6 @@ spec:
     spec:
       containers:
       - image: nginx:1.20.2
-        name: nginx
+        name: meu-container-web
         resources: {}
 status: {}

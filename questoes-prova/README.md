@@ -823,7 +823,7 @@ chmod +x /tmp/script-status-pod-meu-web-container.sh
 ```
 
 
-### Questão 3 - Criamos o pod do Nginx, parabéns! 
+### Questão 3 - Usar o mesmo formato da questão 02, pod web, container meu-container-web no namespace web-1
 
 - TASK-1: Portanto, agora precisamos mudar a versão do Nginx para a versão 1.18.0, pois o
 nosso gerente viu um artigo no Medium e disse que agora temos que usar essa
@@ -884,6 +884,20 @@ status: {}
 ```bash
 kubectl edit deployment -n web-1 web
 ```
+
+```yaml
+
+...
+    spec:
+      containers:
+      - image: nginx:1.20.2-alpine
+
+```
+Outra opção
+```
+kubectl set image deployment/web meu-container-web=nginx:1.20.2-alpine -n web-1
+```
+
 </details>
 
 - TASK-4: Precisamos realizar o rollback do nosso deployment web
@@ -899,10 +913,6 @@ kubectl rollout undo deployment -n web-1 web --to-revision=1
 ```
 </details>
 
-
-https://school.linuxtips.io/courses/1259521/lectures/36978807
-
-1:20:00
 
 
 
