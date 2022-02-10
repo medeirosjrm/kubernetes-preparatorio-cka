@@ -915,4 +915,15 @@ kubectl rollout undo deployment -n web-1 web --to-revision=1
 
 
 
+Criar e export um pod
+```
+kubectl run httpexposed --image=katacoda/docker-http-server:latest --replicas=1 --port=80 --hostport=8001
+```
+
+
+kubectl get svc first-deployment -o go-template='{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{"\n"}}{{end}}{{end}}'
+
+
+
+
 
