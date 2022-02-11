@@ -85,7 +85,79 @@ status: {}
 
 ## 3 - Colocar um node para que não execute nenhum containers.
 
+Procurar quais Taints estão atribuidas ao nó que não executar nenhum container
+```bash
+kubectl describe nodes kube-w1
+# Taints:
+
+
+#vamos criar um deployment e alterar a quantidade de replicas dele
+kubectl run pod-taint --image nginx --dry-run=client -o yaml > pod-taint.yaml
+
+```
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+```
+
+```bash
+kubectl create -f taints.yaml
+
+#é possível ver que os pods foram distribuidos entres os nós kube-w1 e kube-w2
+kubectl get pods -o wide
+nginx-85b98978db-7t68f   1/1     Running   0             17s     10.40.0.5   kube-w2   <none>           <none>
+nginx-85b98978db-82j9h   1/1     Running   0             17s     10.32.0.7   kube-w1   <none>           <none>
+nginx-85b98978db-db7px   1/1     Running   0             17s     10.40.0.6   kube-w2   <none>           <none>
+nginx-85b98978db-r6psq   1/1     Running   0             17s     10.32.0.9   kube-w1   <none>           <none>
+nginx-85b98978db-vkm9x   1/1     Running   0             17s     10.32.0.8   kube-w1   
+<none>           <none>
+
+# Agora vamos deletar o deploy aplicar a taint e criar novamente o deploy
+kubectl delete -f taints.yaml
+# Adicionar um taint
+kubectl taint nodes kube-w1 key1=value1:NoSchedule
+
+# Todos os pods foram criados no node kube-w2
+kubectl create -f taints.yaml
+kubectl get pods -o wide
+nginx-85b98978db-2nmgp   1/1     Running   0             14s     10.40.0.5   kube-w2   <none>           <none>
+nginx-85b98978db-crnm6   1/1     Running   0             14s     10.40.0.6   kube-w2   <none>           <none>
+nginx-85b98978db-nqw5x   1/1     Running   0             14s     10.40.0.9   kube-w2   <none>           <none>
+nginx-85b98978db-r7nct   1/1     Running   0             14s     10.40.0.8   kube-w2   <none>           <none>
+nginx-85b98978db-wbtfj   1/1     Running   0             14s     10.40.0.7   kube-w2   <none>           <none>
+
+# Para finalizar vou refazer o processo removendo a taint e recriando os pods
+
+# Remover o taint
+kubectl taint node kube-w1 key1:NoSchedule-
+
+```
+
 ## 4 - Criar um PV Hostpath.
+
+
 
 ## 5 - Criar um initcontainer para executar uma tarefa necessária para a subida do container principal.
 
