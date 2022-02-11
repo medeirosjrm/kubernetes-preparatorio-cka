@@ -57,6 +57,32 @@ root         359  0.0  0.3   6700  2828 pts/0    R+   01:58   0:00 ps aux
 
 ## 2 - Criar um service/ep apontando para um pod.
 
+```bash
+kubectl run web --image nginx --port 80 --dry-run=client -o yaml > pod.yaml
+kubectl expose pod web --type=NodePort
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: web
+  name: web
+spec:
+  containers:
+  - image: nginx
+    name: web
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+
 ## 3 - Colocar um node para que não execute nenhum containers.
 
 ## 4 - Criar um PV Hostpath.
