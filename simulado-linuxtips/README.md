@@ -60,6 +60,7 @@ root         359  0.0  0.3   6700  2828 pts/0    R+   01:58   0:00 ps aux
 ```bash
 kubectl run web --image nginx --port 80 --dry-run=client -o yaml > pod.yaml
 kubectl expose pod web --type=NodePort
+kubectl get svc,ep  #para verificar se o serviço e o endpoint foram criados
 ```
 
 ```yaml
@@ -85,7 +86,7 @@ status: {}
 
 ## 3 - Colocar um node para que não execute nenhum containers.
 
-Procurar quais Taints estão atribuidas ao nó que não executar nenhum container
+Procurar quais Taints estão atribuidas ao nó que não deve executar nenhum container
 ```bash
 kubectl describe nodes kube-w1
 # Taints:
