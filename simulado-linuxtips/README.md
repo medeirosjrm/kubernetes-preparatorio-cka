@@ -158,6 +158,12 @@ kubectl taint node kube-w1 key1:NoSchedule-
 
 ## 4 - Criar um PV Hostpath.
 
+https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+https://linuxroutes.com/how-to-create-hostpath-persistent-volume-kubernetes/
+
+Exemplo:
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#create-a-persistentvolume
+
 
 
 ## 5 - Criar um initcontainer para executar uma tarefa necessária para a subida do container principal.
