@@ -306,6 +306,11 @@ sudo rm -rf /mnt/data
 
 ## 5 - Criar um initcontainer para executar uma tarefa necessária para a subida do container principal.
 
+https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+
+
+
+
 ## 6 - Criar um daemonset.
 
 ## 7 - Criar um deployment do nginx com 5 réplicas.
