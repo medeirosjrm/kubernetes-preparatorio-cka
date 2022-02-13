@@ -158,11 +158,149 @@ kubectl taint node kube-w1 key1:NoSchedule-
 
 ## 4 - Criar um PV Hostpath.
 
+
 https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
 https://linuxroutes.com/how-to-create-hostpath-persistent-volume-kubernetes/
 
+
 Exemplo:
+https://kubernetes.io/pt-br/docs/concepts/storage/persistent-volumes/#persistentvolumes-do-tipo-hostpath
 https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#create-a-persistentvolume
+
+
+Nesse exercício vamos configurar um PersistentVolume com HostPath e para isso é necessário fazer alguns passo.
+
+- Vamos precisar de um cluster com apenas um nó, támbem é possível fazer esse processo adicionado a Taint de NoSchedule nos outro nós ou utilizar o Minikube
+
+>Ps. No meu caso eu tenho um control plane e dois workers então vou adicionar a Taint NoSchedule em um dos nós.
+
+### Passo 1: Adicionar o NoSchedule em um dos nós.
+
+```bash
+kubectl taint nodes kube-w2 key1=value1:NoSchedule
+kubectl describe nodes kube-w2
+
+```
+
+### Passo 2: Acessar o nó que ainda está recebendo pods e criar o arquivo index.html 
+
+
+```bash
+ssh kube-w1 
+sudo mkdir /mnt/data
+sudo sh -c "echo 'Hello from Kubernetes storage' > /mnt/data/index.html"
+cat /mnt/data/index.html
+```
+
+### Passo 3: Voltar para o control plane ou para o terminal onde está rodando o seu kubectl para criar um PersistentVolume e um PersistentVolumeClaim
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+
+```
+
+```bash
+kubectl create -f pv-volume.yaml
+kubectl get pv task-pv-volume
+```
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+```
+```bash
+kubectl create -f pv-claim.yaml
+kubectl get pv task-pv-volume
+kubectl get pvc task-pv-claim
+```
+
+### Passo 4: Criar o pod que vai usar esse volume
+
+```bash
+kubectl run task-pv-pod --image nginx --port 80 --dry-run=client -o yaml > pv-pod.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: task-pv-pod
+  name: task-pv-pod
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+          claimName: task-pv-claim
+  containers:
+  - image: nginx
+    name: task-pv-pod
+    ports:
+    - containerPort: 80
+    volumeMounts:
+      - mountPath: "/usr/share/nginx/html"
+        name: task-pv-storage
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+
+```
+
+Vamos verificar se o volume foi criado corretamente dentro do pod
+
+```bash
+kubectl exec -ti task-pv-pod -- /bin/bash
+
+curl http://localhost
+Hello from Kubernetes storage
+
+#Ou
+
+cat /usr/share/nginx/html/index.html
+Hello from Kubernetes storage
+
+```
+
+### Passo 5: Limpando tudo
+
+```bash
+kubectl delete pod task-pv-pod
+kubectl delete pvc task-pv-claim
+kubectl delete pv task-pv-volume
+
+# Acessar o node via ssh e limpar a pasta
+
+ssh kube-w1
+sudo rm -rf /mnt/data
+
+```
+
 
 
 
