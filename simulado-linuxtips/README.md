@@ -299,6 +299,9 @@ kubectl delete pv task-pv-volume
 ssh kube-w1
 sudo rm -rf /mnt/data
 
+# Remover a Taint
+kubectl taint node kube-w2 key1:NoSchedule-
+kubectl describe node kube-w2
 ```
 
 
@@ -306,8 +309,143 @@ sudo rm -rf /mnt/data
 
 ## 5 - Criar um initcontainer para executar uma tarefa necessária para a subida do container principal.
 
-https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
 
+> Esse tutorial funciona.
+https://docs.openshift.com/container-platform/4.8/nodes/containers/nodes-containers-init.html
+
+Vamos subir um pod a nossa aplicação que será um busybox, antes de rodar propriamente a nossa aplicação fake, vamos subir dois initContainer que vão ser um serviço (fake) e um banco de dados (fake) simulando um cenário que precisamos de duas inicializações antes da aplicação estar pronta para uso.
+
+
+```bash
+kubectl run myapp-pod --image busybox --dry-run=client -o yaml > myapp-pod.yaml
+```
+
+Vamos editar nosso yaml e adicionar os initContainers
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: myapp-pod
+  name: myapp-pod
+spec:
+  containers:
+  - image: busybox
+    name: myapp-container
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox
+    command: ['sh','-c', 'until nslookup myservice.default.svc.cluster.local; do echo waiting for myservice; sleep 2; done']
+  - name: init-mydb
+    image: busybox
+    command: ['sh','-c', 'until nslookup mydb.default.svc.cluster.local; do echo waiting for mydb; sleep 2; done']
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+Verificando o status do pod
+```bash
+kubectl get -f myapp-pod.yaml
+#ou
+kubectl get pods myapp-pod
+
+#vamos vefificar os detalhes do pod
+kubectl describe pod myapp-pod
+```
+
+O que esperamos encontrar no describe?
+
+- Queremos ver que o primeiro initContainer está running enquanto o segundo está waiting assim como o container da aplicação
+
+```yaml
+Name:          myapp-pod
+Namespace:     default
+[...]
+Labels:        app=myapp
+Status:        Pending
+[...]
+Init Containers:
+  init-myservice:
+[...]
+    State:         Running
+[...]
+  init-mydb:
+[...]
+    State:         Waiting
+      Reason:      PodInitializing
+    Ready:         False
+[...]
+Containers:
+  myapp-container:
+[...]
+    State:         Waiting
+      Reason:      PodInitializing
+    Ready:         False
+[...]
+Events:
+  FirstSeen    LastSeen    Count    From                      SubObjectPath                           Type          Reason        Message
+  ---------    --------    -----    ----                      -------------                           --------      ------        -------
+  16s          16s         1        {default-scheduler }                                              Normal        Scheduled     Successfully assigned myapp-pod to 172.17.4.201
+  16s          16s         1        {kubelet 172.17.4.201}    spec.initContainers{init-myservice}     Normal        Pulling       pulling image "busybox"
+  13s          13s         1        {kubelet 172.17.4.201}    spec.initContainers{init-myservice}     Normal        Pulled        Successfully pulled image "busybox"
+  13s          13s         1        {kubelet 172.17.4.201}    spec.initContainers{init-myservice}     Normal        Created       Created container with docker id 5ced34a04634; Security:[seccomp=unconfined]
+  13s          13s         1        {kubelet 172.17.4.201}    spec.initContainers{init-myservice}     Normal        Started       Started container with docker id 5ced34a04634
+```
+
+Verificando os logs dos containers do pod
+```
+kubectl logs myapp-pod -c init-myservice
+$ waiting for myservice
+$ waiting for myservice
+
+kubectl logs myapp-pod -c init-mydb
+$ Error from server (BadRequest): container "init-mydb" in pod "myapp-pod" is waiting to start: PodInitializing
+
+```
+
+Agora vamos criar os serviços
+
+```bash
+#Criando o myservice
+kubectl create service clusterip myservice --tcp=80:9376 --dry-run=client -o yaml > myservice.yaml
+kubectl create -f myservice.yaml
+
+#Revisando os logs
+kubectl logs myapp-pod -c init-myservice
+#---
+$ waiting for myservice
+$ 10.96.234.248   myservice.default.svc.cluster.local
+
+#Criand o mydb
+kubectl create service clusterip mydb --tcp=80:9377 -o yaml --dry-run=client > mydb.yaml
+kubectl create -f mydb.yaml
+
+#Revisando os logs
+kubectl logs myapp-pod -c init-mydb
+#---
+$ waiting for mydb
+$ 10.108.139.2    mydb.default.svc.cluster.local
+
+#Conferindo se o pod foi inicializado
+kubectl get pods
+kubectl logs myapp-pod -c myapp-container
+#---
+$The app is running!
+
+```
+
+Agora limpando a bagunça
+
+```bash
+kubectl delete svc mydb
+kubectl delete svc myservice
+ kubectl delete -f myapp-pod.yaml
+```
 
 
 
