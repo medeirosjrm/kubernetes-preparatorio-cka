@@ -451,6 +451,10 @@ kubectl delete svc myservice
 
 ## 6 - Criar um daemonset.
 
+
+https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+
+
 ## 7 - Criar um deployment do nginx com 5 réplicas.
 
 ## 8 - Ver quais os pods que mais estão consumindo cpu através do kubectl top.
