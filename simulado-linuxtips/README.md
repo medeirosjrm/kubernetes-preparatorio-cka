@@ -454,12 +454,148 @@ kubectl delete svc myservice
 
 https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
 
+Daemonset garante que todos (ou quase conforme as regras de traint e tolerations) executem uma cópia de um pod
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-elasticsearch
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-logging
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-elasticsearch
+  template:
+    metadata:
+      labels:
+        name: fluentd-elasticsearch
+    spec:
+      tolerations:
+      # remove it if your masters can't run pods
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: fluentd-elasticsearch
+        image: quay.io/fluentd_elasticsearch/fluentd:v2.5.2
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+
+```
+
 
 ## 7 - Criar um deployment do nginx com 5 réplicas.
 
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+```bash
+kubectl create deployment nginx --image nginx --port 80 -o yaml --dry-run=client > deployment.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
+```
+
 ## 8 - Ver quais os pods que mais estão consumindo cpu através do kubectl top.
 
+https://github.com/kubernetes-sigs/metrics-server#configuration
+
+Baixar e alterar o aquivo componente
+https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+Ou editar o deployment do metrics-server e adicionar a flag (Não testei, fiz do outro jeito, baixei o arquivo e alterei)
+```bash
+kubectl edit deploy -n kube-system metrics-server
+```
+
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: metrics-server
+  name: metrics-server
+  namespace: kube-system
+...
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+        - --kubelet-insecure-tls  # <adicionar essa flag>
+```
+
+```bash
+kubectl top pod
+
+#---
+NAME                     CPU(cores)   MEMORY(bytes)
+app1-679bb7fc98-gbbdz    0m           1Mi
+app1-679bb7fc98-x6czc    0m           1Mi
+app2-65bc9dfb77-k4z4v    0m           1Mi
+app2-65bc9dfb77-kcd44    0m           1Mi
+demo-764c97f6fd-mtlv7    1m           11Mi
+nginx-74d589986c-5wx6n   0m           1Mi
+nginx-74d589986c-9vzbj   0m           2Mi
+nginx-74d589986c-cn2mf   0m           1Mi
+nginx-74d589986c-n5m9n   0m           1Mi
+nginx-74d589986c-p8pm7   0m           1Mi
+web                      0m           1Mi
+```
+
+
 ## 9 - Organizar a saída do comando "kubectl get pods" pelo tamanho do capacity storage.
+
+
 
 ## 10 - Qual a quantidade de nodes que estão aceitando novos containers
 
