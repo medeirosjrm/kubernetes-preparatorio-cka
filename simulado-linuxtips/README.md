@@ -571,7 +571,7 @@ metadata:
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
         - --metric-resolution=15s
-        - --kubelet-insecure-tls  # <adicionar essa flag>
+        - --kubelet-insecure-tls  # << adicionar essa flag
 ```
 
 ```bash
