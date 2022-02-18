@@ -597,7 +597,16 @@ web                      0m           1Mi
 
 
 
+
 ## 10 - Qual a quantidade de nodes que estão aceitando novos containers
+
+```bash
+#Op1
+kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[?(@.effect=='NoSchedule')].effect}{\"\n\"}{end}"
+
+#Op2
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINT:.spec.taints[*].effect
+```
 
 ## 11 - Criar um secret e dois pods, um montando o secret em filesystem e outro como variável
 
