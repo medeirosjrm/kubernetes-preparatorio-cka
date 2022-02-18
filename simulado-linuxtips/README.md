@@ -595,7 +595,10 @@ web                      0m           1Mi
 
 ## 9 - Organizar a saída do comando "kubectl get pods" pelo tamanho do capacity storage.
 
-
+TODO: Criar o cenário de teste para o exemplo abaixo.
+```bash
+kubectl get pods -o jsonpath={.status.capacity.storage}
+```
 
 
 ## 10 - Qual a quantidade de nodes que estão aceitando novos containers
