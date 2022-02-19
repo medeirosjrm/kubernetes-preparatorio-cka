@@ -593,11 +593,60 @@ web                      0m           1Mi
 ```
 
 
-## 9 - Organizar a saída do comando "kubectl get pods" pelo tamanho do capacity storage.
+## 9 - Organizar a saída do comando "kubectl get pods" pelo tamanho do capacity storage. (NÃO CONSEGUI)
+
+https://kubernetes.io/docs/reference/kubectl/jsonpath/
 
 TODO: Criar o cenário de teste para o exemplo abaixo.
+
+
+*Ambiente:*
 ```bash
+
+#Bloquar o kube-w2 para não receber pods
+kubectl taint nodes kube-w2 key1=value1:NoSchedule
+kubectl describe nodes kube-w2
+
+ssh kube-w1 
+sudo mkdir /mnt/data
+sudo sh -c "echo 'Hello from Kubernetes storage' > /mnt/data/index.html"
+cat /mnt/data/index.html
+
+
+kubectl create -f pv.yaml
+kubectl create -f pvc.yaml
+
+kubectl get pv task-pv-volume
+kubectl get pvc task-pv-claim
+
+kubectl run task-pv-pod --image nginx --port 80 --dry-run=client -o yaml > pod.yaml
+kubectl create -f pod.yaml
+
+```
+
+
+*Resposta:*
+```bash
+##Não foi possível simular
 kubectl get pods -o jsonpath={.status.capacity.storage}
+
+#kubectl get pods -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
+#kubectl get pods -o jsonpath={.items[*].status.podIP}
+```
+
+*Limpando a bagunça*
+
+```bash
+kubectl delete -f pod.yaml
+kubectl delete -f pvc.yaml
+kubectl delete -f pv.yaml
+
+ssh kube-w1
+sudo rm -rf /mnt/data
+
+# Remover a Taint
+kubectl taint node kube-w2 key1:NoSchedule-
+kubectl describe node kube-w2
 ```
 
 
@@ -613,7 +662,22 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINT:.spec.taints[*].ef
 
 ## 11 - Criar um secret e dois pods, um montando o secret em filesystem e outro como variável
 
+https://kubernetes.io/docs/concepts/configuration/secret/
+https://kubernetes.io/pt-br/docs/tasks/configmap-secret/managing-secret-using-kubectl/
+https://kubernetes.io/pt-br/docs/tasks/configmap-secret/managing-secret-using-config-file/
+
+Exemplo:
+https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod
+
+
+
+
+
+
 ## 12 - Fazer a instalação do nginx em determinada versão, atualizar e depois realizar o rollback com o --record.
+
+
+
 
 ## 13 - EXTRA - Realizar o backup do etcd.
 
